@@ -43,14 +43,14 @@ skimr::skim(litters_df)
 
 ```{r}
 litters_df = 
-  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", "."))
+  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".",""))
 ```
 
 
 ```{r}
 pups_df = 
   read_csv("data_import_examples/FAS_pups.csv", 
-           skip = 3, na = c("NA", ".")
+           skip = 3, na = c("NA", ".","")
            )
 
 pups_df = 

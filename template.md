@@ -113,13 +113,8 @@ Data summary
 
 ``` r
 litters_df = 
-  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", "."))
+  read_csv("data_import_examples/FAS_litters.csv", na = c("NA", ".",""))
 ```
-
-    ## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-    ## e.g.:
-    ##   dat <- vroom(...)
-    ##   problems(dat)
 
     ## Rows: 49 Columns: 8
     ## ── Column specification ────────────────────────────────────────────────────────
@@ -133,7 +128,7 @@ litters_df =
 ``` r
 pups_df = 
   read_csv("data_import_examples/FAS_pups.csv", 
-           skip = 3, na = c("NA", ".")
+           skip = 3, na = c("NA", ".","")
            )
 ```
 
