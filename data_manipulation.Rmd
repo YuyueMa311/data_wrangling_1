@@ -143,9 +143,70 @@ head(arrange(litters_df, group, pups_born_alive), 10)
 ```
 
 
+## PIPES
+
+Bad way of managering your data manipulation process:
+```{r}
+litters_df_raw = 
+    read_csv("./data_import_examples/FAS_litters.csv", na = c("NA", ".", ""))
+
+litters_df_clean_names = janitor::clean_names(litters_df_raw)
+
+litters_df_selected_cols = select(litters_df_clean_names, -pups_survive)
+litters_df_with_vars = 
+  mutate(
+    litters_df_selected_cols, 
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group))
+litters_df_with_vars_without_missing = 
+  drop_na(litters_df_with_vars, wt_gain)
+litters_df_with_vars_without_missing
+```
 
 
+```{r}
+litters_df_clean = 
+  drop_na(
+    mutate(
+      select(
+        janitor::clean_names(
+          read_csv("./data_import_examples/FAS_litters.csv", na = c("NA", ".", ""))
+          ), 
+      -pups_survive
+      ),
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)
+    ),
+  wt_gain
+  )
 
+litters_df_clean
+```
 
+Use pipes `|>` to avoid all these above:
+```{r}
+litters_df = 
+  read_csv("./data_import_examples/FAS_litters.csv", na = c("NA", ".", "")) |> 
+  janitor::clean_names() |> 
+  select(-pups_survive) |> 
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)) |> 
+  drop_na(wt_gain)
+
+litters_df
+```
+
+Learning Assessment Code:
+```{r}
+pups_df=
+  read_csv("./data_import_examples/FAS_pups.csv", na = c("NA", "."), skip = 3) |>
+  janitor::clean_names() |>
+  filter(sex == 1) |>
+  select(-pd_ears) |> 
+  mutate(pd_pivot_gt7 = pd_pivot > 7)
+
+pups_df
+```
 
 
