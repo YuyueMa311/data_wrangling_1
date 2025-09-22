@@ -119,6 +119,22 @@ filter(pups_df, sex == 2, pd_walk < 11)
 ```
 
 
+## `Mutate`
+
+Use `mutate()` to create or modify variables: 
+create wt_gain and make variable(group) lower case.
+```{r}
+mutate(litters_df,
+  wt_gain = gd18_weight - gd0_weight,
+  group = str_to_lower(group)
+)
+```
+
+
+
+
+
+
 
 
 
