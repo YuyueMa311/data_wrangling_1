@@ -209,4 +209,11 @@ pups_df=
 pups_df
 ```
 
+Some cases where what you’re piping isn’t going into the first argument. Here, using the placeholder `_` is necessary to indicate where the object being piped should go:
+```{r}
+litters_df |>
+  lm(wt_gain ~ pups_born_alive, data = _) |>
+  broom::tidy()
+```
+
 
