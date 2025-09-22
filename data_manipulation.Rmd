@@ -131,6 +131,17 @@ mutate(litters_df,
 ```
 
 
+## `arrange`
+
+`arrange()` arranges things, descending order by `desc()`
+`head(...,10)` only show first 10 rows
+```{r}
+arrange(litters_df, group, pups_born_alive)
+arrange(litters_df, group, desc(pups_born_alive))
+
+head(arrange(litters_df, group, pups_born_alive), 10)
+```
+
 
 
 
