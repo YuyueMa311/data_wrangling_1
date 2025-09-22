@@ -22,29 +22,29 @@ pups_df =
     janitor::clean_names(pups_df)
 ```
 
-## 'select'
+## `select`
 
-'select' selects variables from my dataframe.
+`select` selects variables from my dataframe.
 ```{r}
 select(litters_df, group, litter_number, gd0_weight, pups_born_alive)
 ```
 
-'select' select a specific range
+`select` select a specific range
 ```{r}
 select(litters_df, group:gd_of_birth)
 ```
 
-'select' select by removal
+`select` select by removal
 ```{r}
 select(litters_df, -pups_survive)
 ```
 
-select to remove a ranges of variable together
+`select` to remove a ranges of variable together
 ```{r}
 select(litters_df, -(group:gd_of_birth))
 ```
 
-select by prefix (ie."gd"); also 'ends_with()', and 'contains()'
+`select` by prefix (ie."gd"); also 'ends_with()', and 'contains()'
 ```{r}
 select(litters_df, group, starts_with("gd"))
 ```
@@ -66,16 +66,57 @@ rename by selecting
 rename(litters_df, GROUP = group, LiTtEr_NuMbEr = litter_number)
 ```
 
-what if only select one variable...?
+what if only select one variable...? 
 ```{r}
 select(litters_df, group)
+
+pull(litters_df, group)
+```
+same for 'pull' but remember to save it somewhere for later use
+
+Learning Assessment Code:
+```{r}
+select(pups_df, litter_number, sex, pd_ears)
 ```
 
 
+## 'Filter'
 
+Use `filter()` to filter out rows. 
 
+filter variables that satistify rules
+```{r}
+filter(litters_df, gd_of_birth == 20, pups_born_alive == 6)
+```
+look for more than 5 pups alive:
+```{r}
+filter(litters_df, pups_born_alive > 5)
+filter(litters_df, pups_born_alive >= 5)
+filter(litters_df, pups_born_alive <= 5)
+```
 
+look for non-matches: `!=` not equal to
+```{r}
+filter(litters_df, pups_born_alive !=6)
+```
 
+match to a set, keep specific group: Con7 and Con8
+```{r}
+filter(litters_df, group %in% c("Con7", "Con8"))
+```
+
+filter out missing rows with `drop_na()` in the whole dataset 
+or just filter out missing rows under gd0_weight
+```{r}
+drop_na(litters_df)
+drop_na(litters_df, gd0_weight)
+```
+
+Learning Assignment Code:
+```{r}
+filter(pups_df, sex == 1)
+filter(pups_df, sex == 2, pd_walk < 11)
+```
 
 
 
