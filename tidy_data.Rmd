@@ -3,6 +3,159 @@ title: "tidy_data"
 output: github_document
 ---
 
+```{r setup, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(readxl)
+library(haven)
 
 options(tibble.print_min = 5)
+```
+
+This document will show how to tidy data.
+
+## Pivot longer
+
+shorten the columns and combine variables
+` names_prefix` delete prefix among all variables
+changing bl to 00m for consistency across visits and converting visit to a factor variable
+```{r}
+pulse_df = read_sas("./data_import_examples/public_pulse_data.sas7bdat")|>
+  janitor::clean_names()|>
+  pivot_longer(
+    cols = bdi_score_bl:bdi_score_12m,
+    names_to = "visit",
+    values_to = "bdi_score",
+    names_prefix = "bdi_score_"
+  )|>
+  mutate(visit = replace (visit, visit == "bl", "00m")) |>
+  relocate(id,visit)
+```
+
+Learning Assessment Code:
+```{r}
+litters_wide = 
+  read_csv(
+    "./data_import_examples/FAS_litters.csv",na = c("NA", ".", "")) |>
+  janitor::clean_names() |>
+  pivot_longer(
+    cols = gd0_weight:gd18_weight,
+    names_to = "gd_time", 
+    values_to = "weight") |>
+  mutate(gd_time = case_match(gd_time, "gd0_weight" ~ 0, "gd18_weight" ~ 18))
+
+```
+
+## Pivot wider
+
+Let's make up on analysis result table.
+```{r}
+analysis_result = 
+  tibble(
+    group = c("treatment", "treatment", "placebo", "placebo"),
+    time = c("pre", "post", "pre", "post"),
+    mean = c(4, 8, 3.5, 4)
+  )
+
+analysis_result
+```
+
+Pivot wider for human readability:
+knitr::kable() produce a nicer table for reading in html format.
+```{r}
+pivot_wider(
+  analysis_result, 
+  names_from = "time", 
+  values_from = "mean") |>
+  knitr::kable()
+```
+
+
+## Bind tables.
+
+Import/Read each table from excel:
+```{r}
+fellowship_ring = 
+  readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "B3:D6") |>
+  mutate(movie = "fellowship_ring")
+
+two_towers = 
+  readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "F3:H6") |>
+  mutate(movie = "two_towers")
+
+return_king = 
+  readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "J3:L6") |>
+  mutate(movie = "return_king")
+```
+
+
+Stack tables up, using `bind_rows` function:
+```{r}
+lotr_tidy = 
+  bind_rows(fellowship_ring, two_towers, return_king) |>
+  janitor::clean_names() |>
+  pivot_longer(
+    female:male,
+    names_to = "gender", 
+    values_to = "words") |>
+  mutate(race = str_to_lower(race)) |> 
+  select(movie, everything()) 
+
+lotr_tidy
+```
+
+## Joing FAS datasets
+
+Import `litters` dataset.
+```{r}
+litter_df = 
+  read_csv("./data_import_examples/FAS_litters.csv",na = c("NA", ".", "")) |>
+  janitor::clean_names() |>
+  separate(group, into = c("dose", "day_of_tx"), sep = 3) |>
+  relocate(litter_number) |>
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    dose = str_to_lower(dose))
+```
+
+
+Import `pups` next:
+```{r}
+pups_df = 
+  read_csv("./data_import_examples/FAS_pups.csv", na = c("NA", "."), skip = 3) |>
+  janitor::clean_names() |>
+  mutate(
+    sex = 
+      case_match(
+        sex, 
+        1 ~ "male", 
+        2 ~ "female"),
+    sex = as.factor(sex)) 
+  
+```
+
+Join the datasets!
+
+There are four major ways join dataframes x and y:
+Inner: keeps data that appear in both x and y
+Left: keeps data that appear in x
+Right: keeps data that appear in y
+Full: keeps data that appear in either x or y
+
+Left joins are the most common, because they add data from a smaller table y into a larger table x without removing anything from x.
+```{r}
+fas_df = 
+  left_join(pups_df, litter_df, by = "litter_number") |>
+  select(litter_number, everything())
+
+fas_df
+```
+
+
+
+
+
+
+
+
+
+
