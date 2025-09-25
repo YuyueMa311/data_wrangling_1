@@ -1,0 +1,8 @@
+---
+title: "tidy_data"
+output: github_document
+---
+
+library(tidyverse)
+
+options(tibble.print_min = 5)
